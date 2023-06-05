@@ -18,13 +18,35 @@ datasource db {
     // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
     // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
     
+// Application Schema
 
-
-model Example {
-    id        String   @id @default(cuid())
+ model Tweet {
+    // fields
+    id String @id @default(uuid())
+    userId String
+    content String
     createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+
+// relations
+user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+likes Like[]
+
+// index
+@@unique([createdAt, id])
+@@index([userId])
+ }
+
+model Like {
+userId String
+tweetId String
+user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+Tweet Tweet @relation(fields: [tweetId], references: [id], onDelete: Cascade)
+
+@@id([userId, tweetId])
+@@index([userId])
+@@index([tweetId])
 }
+
 
 // need to manually remove text commenting that was below
 // Necessary for Next auth
@@ -66,6 +88,12 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
+
+    // Non-next-auth
+    tweets   Tweet[]
+    likes Like[]
+    followers User[] @relation(name: "Followers")
+    follows User[] @relation(name: "Followers")
 }
 
 model VerificationToken {
