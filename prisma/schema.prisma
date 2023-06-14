@@ -4,49 +4,48 @@
 // generator and datasource were copied from Planetscale Schema
 // plantetscale db name was twitter-along
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "mysql"
-  url = env("DATABASE_URL")
-  relationMode = "prisma"
+    provider     = "mysql"
+    url          = env("DATABASE_URL")
+    relationMode = "prisma"
 }
 
-    // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    
+// NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
+// Further reading:
+// https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
+// https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+
 // Application Schema
 
- model Tweet {
+model Tweet {
     // fields
-    id String @id @default(uuid())
-    userId String
-    content String
+    id        String   @id @default(uuid())
+    userId    String
+    content   String
     createdAt DateTime @default(now())
 
-// relations
-user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-likes Like[]
+    // relations
+    user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    likes Like[]
 
-// index
-@@unique([createdAt, id])
-@@index([userId])
- }
-
-model Like {
-userId String
-tweetId String
-user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-Tweet Tweet @relation(fields: [tweetId], references: [id], onDelete: Cascade)
-
-@@id([userId, tweetId])
-@@index([userId])
-@@index([tweetId])
+    // index
+    @@unique([createdAt, id])
+    @@index([userId])
 }
 
+model Like {
+    userId  String
+    tweetId String
+    user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+    Tweet   Tweet  @relation(fields: [tweetId], references: [id], onDelete: Cascade)
+
+    @@id([userId, tweetId])
+    @@index([userId])
+    @@index([tweetId])
+}
 
 // need to manually remove text commenting that was below
 // Necessary for Next auth
@@ -76,6 +75,7 @@ model Session {
     userId       String
     expires      DateTime
     user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
     // need to add the next line in manually
     @@index([userId])
 }
@@ -90,10 +90,10 @@ model User {
     sessions      Session[]
 
     // Non-next-auth
-    tweets   Tweet[]
-    likes Like[]
-    followers User[] @relation(name: "Followers")
-    follows User[] @relation(name: "Followers")
+    tweets    Tweet[]
+    likes     Like[]
+    followers User[]  @relation(name: "Followers")
+    follows   User[]  @relation(name: "Followers")
 }
 
 model VerificationToken {
